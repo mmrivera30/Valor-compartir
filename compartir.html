@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cuando lo Poco se Entrega – Edición Legendaria</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #0b132b, #1c2541, #3a506b);
+      color: #fff;
+    }
+    .screen {
+      display: none;
+      padding: 20px;
+      max-width: 820px;
+      margin: auto;
+      text-align: center;
+    }
+    .active { display: block; }
+    h1, h2 { margin-bottom: 10px; }
+    .story {
+      background: rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 22px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    button {
+      margin: 12px;
+      padding: 14px 28px;
+      font-size: 16px;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      background: #5bc0be;
+      color: #000;
+      font-weight: bold;
+    }
+    button.alt { background: #e63946; color: #fff; }
+    .fade { animation: fade 1s; }
+    @keyframes fade { from {opacity:0;} to {opacity:1;} }
+    textarea {
+      width: 90%;
+      max-width: 600px;
+      height: 80px;
+      border-radius: 12px;
+      border: none;
+      padding: 10px;
+      font-size: 15px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      background: rgba(255,255,255,0.1);
+      margin: 6px 0;
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro" class="screen active fade">
+  <h1>🍞🐟 Cuando lo Poco se Entrega</h1>
+  <h2>Edición Legendaria</h2>
+  <div class="story">
+    <p>Estás entre una multitud cansada y hambrienta.</p>
+    <p>No eres líder. No eres adulto.</p>
+    <p>Eres solo alguien con <strong>5 panes y 2 peces</strong>.</p>
+    <p><em>Jesús está ahí… esperando tu decisión.</em></p>
+  </div>
+  <button onclick="go('decision1')">Entrar en la historia</button>
+</div>
+
+<!-- DECISIONES -->
+<div id="decision1" class="screen fade">
+  <h2>Decisión 1 – Miedo</h2>
+  <div class="story">
+    <p>Ves la multitud.</p>
+    <p>Piensas: “Esto no alcanzará”.</p>
+  </div>
+  <button onclick="choose(1,true)">Entregarlo igual</button>
+  <button class="alt" onclick="choose(1,false)">Guardar por seguridad</button>
+</div>
+
+<div id="decision2" class="screen fade">
+  <h2>Decisión 2 – Presión</h2>
+  <div class="story">
+    <p>Otros dudan.</p>
+    <p>Algunos se ríen.</p>
+  </div>
+  <button onclick="choose(2,true)">Confiar aunque se burlen</button>
+  <button class="alt" onclick="choose(2,false)">Retirarme</button>
+</div>
+
+<div id="decision3" class="screen fade">
+  <h2>Decisión 3 – Fe</h2>
+  <div class="story">
+    <p>Jesús ora.</p>
+    <p>Todavía no ves el milagro.</p>
+  </div>
+  <button onclick="choose(3,true)">Esperar</button>
+  <button class="alt" onclick="choose(3,false)">Dudar</button>
+</div>
+
+<!-- FINAL -->
+<div id="final" class="screen fade">
+  <h2 id="finalTitle"></h2>
+  <div class="story" id="finalText"></div>
+  <button onclick="go('journal')">Reflexionar</button>
+</div>
+
+<!-- DIARIO -->
+<div id="journal" class="screen fade">
+  <h2>📝 Mi reflexión</h2>
+  <div class="story">
+    <p>Responde en silencio o escribiendo:</p>
+    <p><strong>¿Qué es “lo poco” que hoy puedo entregar a Jesús?</strong></p>
+    <textarea id="reflection" placeholder="Escribe aquí si deseas..."></textarea><br>
+    <button onclick="saveReflection()">Guardar reflexión</button>
+    <h3>Reflexiones guardadas (máx. 5)</h3>
+    <ul id="savedList"></ul>
+    <p><strong>Juan 6:11</strong></p>
+    <p>“Y tomó Jesús aquellos panes, y habiendo dado gracias, los repartió…”</p>
+  </div>
+</div>
+
+<script>
+  let faith = 0;
+  let reflections = [];
+
+  function go(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function choose(step, yes) {
+    if (yes) faith++;
+    if (step === 1) {
+      if (yes) go('decision2');
+      else endImmediate("Guardaste tu comida", "Preferiste asegurar lo tuyo. La multitud siguió con hambre. Jesús respetó tu decisión, pero el milagro no ocurrió a través de ti.");
+    }
+    if (step === 2) {
+      if (yes) go('decision3');
+      else endImmediate("Te retiraste", "Decidiste apartarte. El milagro estaba cerca, pero no fuiste parte de él.");
+    }
+    if (step === 3) {
+      if (yes) endGame();
+      else endImmediate("Dudaste", "Tu corazón se llenó de inseguridad. Jesús estaba listo, pero esperaba tu confianza.");
+    }
+  }
+
+  function endImmediate(titleMsg, textMsg) {
+    const title = document.getElementById('finalTitle');
+    const text = document.getElementById('finalText');
+    title.textContent = "❌ " + titleMsg;
+    text.innerHTML = "<p>" + textMsg + "</p>";
+    go('final');
+  }
+
+  function endGame() {
+    const title = document.getElementById('finalTitle');
+    const text = document.getElementById('finalText');
+
+    if (faith >= 2) {
+      title.textContent = '✨ El Milagro Ocurre';
+      text.innerHTML = '<p>El pan se reparte.</p><p>Todos comen.</p><p>Y aún sobra.</p><p><strong>Todo comenzó cuando compartiste.</strong></p>';
+    } else {
+      title.textContent = '🤍 El Milagro Espera';
+      text.innerHTML = '<p>Jesús estaba listo.</p><p>El milagro también.</p><p>Pero esperaba una entrega.</p>';
+    }
+    go('final');
+  }
+
+  function saveReflection() {
+    const input = document.getElementById('reflection');
+    const text = input.value.trim();
+    if (text) {
+      reflections.push(text);
+      if (reflections.length > 5) {
+        reflections.shift(); // elimina el más antiguo
+      }
+      input.value = '';
+      renderReflections();
+    }
+  }
+
+  function renderReflections() {
+    const list = document.getElementById('savedList');
+    list.innerHTML = '';
+    reflections.forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r;
+      list.appendChild(li);
+    });
+  }
+</script>
+</body>
+</html>
